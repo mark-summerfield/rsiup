@@ -1,5 +1,18 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
 
+use crate::xerror::XResult;
+use std::ffi::{CStr, CString};
+
+pub(crate) fn c_to_string(p: *const i8) -> XResult<String> {
+    let c: &CStr = unsafe { CStr::from_ptr(p) };
+    let s: &str = c.to_str()?;
+    Ok(s.to_owned())
+}
+
+pub(crate) fn c_from_str(s: &str) -> *const i8 {
+    CString::new(s).unwrap().into_raw()
+}
+
 #[repr(C)] pub struct Ihandle { _private: [u8; 0] }
 pub type Icallback = extern fn(ih: *mut Ihandle) -> i32;
 
@@ -37,3 +50,5 @@ pub const TOP: i32 = LEFT;
 pub const BOTTOM: i32 = RIGHT;
 pub const TOPPARENT: i32 = LEFTPARENT;
 pub const BOTTOMPARENT: i32 = RIGHTPARENT;
+
+pub(crate) const UTF8MODE: &str = "UTF8MODE";

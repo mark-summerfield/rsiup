@@ -1,6 +1,6 @@
 src/lib.rs
 src/iup.rs
-src/global.rs
+src/prelude.rs
 src/xerror.rs
 Cargo.toml
 
