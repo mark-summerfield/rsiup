@@ -125,14 +125,13 @@ impl<'a> Iup<'a> {
         }
     }
 
-    pub fn get_attribute_ih(&self, ih: *mut Ihandle,
-                             name: &str) -> *mut Ihandle {
-        (self._getattributeih)(ih, c_from_str(&name)) as *mut Ihandle
-    }
-
     pub fn get_dialog_child(&self, ih: *mut Ihandle,
                             name: &str) -> *mut Ihandle {
         (self._getdialogchild)(ih, c_from_str(&name))
+    }
+
+    pub fn get_ih(&self, ih: *mut Ihandle, name: &str) -> *mut Ihandle {
+        (self._getattributeih)(ih, c_from_str(&name)) as *mut Ihandle
     }
 
     pub fn get_int(&self, ih: *mut Ihandle, name: &str) -> i32 {
@@ -164,11 +163,6 @@ impl<'a> Iup<'a> {
         (self._setattribute)(ih, c_from_str(&name), c_from_str(&value));
     }
 
-    pub fn set_attribute_ih(&self, ih: *mut Ihandle, name: &str,
-                            ihx: *mut Ihandle) {
-        (self._setattributeih)(ih, c_from_str(&name), ihx);
-    }
-
     pub fn set_callback(&self, ih: *mut Ihandle, name: &str,
                         func: Icallback) -> Icallback {
         (self._setcallback)(ih, c_from_str(&name), func)
@@ -180,6 +174,10 @@ impl<'a> Iup<'a> {
 
     pub fn set_global(&self, name: &str, value: &str) {
         (self._setglobal)(c_from_str(&name), c_from_str(&value));
+    }
+
+    pub fn set_ih(&self, ih: *mut Ihandle, name: &str, ihx: *mut Ihandle) {
+        (self._setattributeih)(ih, c_from_str(&name), ihx);
     }
 
     pub fn set_int(&self, ih: *mut Ihandle, name: &str, value: i32) {
