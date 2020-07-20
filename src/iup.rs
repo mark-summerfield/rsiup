@@ -1,4 +1,5 @@
 // Copyright © 2020 Mark Summerfield. All rights reserved.
+// Licensed under the Apache License, Version 2.0.
 
 use crate::prelude::*;
 use crate::{xerr, xerror::{xerror, XResult}};
