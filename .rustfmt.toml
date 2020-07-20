@@ -1,0 +1,10 @@
+edition = "2018"
+max_width = 74
+use_small_heuristics = "Max"
+use_field_init_shorthand = true
+# comment_width = 74
+# wrap_comments = true
+# fn_args_density = "Compressed"
+# format_strings = true
+# merge_imports = true
+# reorder_impl_items = true
