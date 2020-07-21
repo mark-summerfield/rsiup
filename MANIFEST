@@ -4,6 +4,7 @@ src/prelude.rs
 src/xerror.rs
 Cargo.toml
 
+README.md
 st.sh
 
 # vim: syn=yaml

@@ -1,4 +1,4 @@
-# rs-iup
+# rsiup
 
 Experimental and incomplete dynamic Rust bindings to the
 [IUP](https://www.tecgraf.puc-rio.br/iup/) library.
@@ -16,5 +16,5 @@ time it should build and run. Or, if you have Python 3 installed, use the
 
 ## License
 
-rs-iup is free open source software (FOSS) licensed under the Apache-2.0
+rsiup is free open source software (FOSS) licensed under the Apache-2.0
 license: see LICENSE.
