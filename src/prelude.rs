@@ -33,6 +33,8 @@ pub const ACTION_CB: &str = "ACTION_CB";
 pub const BRINGFRONT: &str = "BRINGFRONT";
 pub const NAME: &str = "NAME";
 pub const RUN: &str = "RUN";
+pub const SYSTEM: &str = "SYSTEM";
+pub const SYSTEMVERSION: &str = "SYSTEMVERSION";
 pub const TIME: &str = "TIME";
 pub const TITLE: &str = "TITLE";
 

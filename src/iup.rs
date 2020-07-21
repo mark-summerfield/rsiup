@@ -38,6 +38,7 @@ pub struct Iup<'a> {
     _getattribute: Symbol<'a, SigHCrC>,
     _getattributeih: Symbol<'a, SigHCrH>,
     _getdialogchild: Symbol<'a, SigHCrH>,
+    _getglobal: Symbol<'a, SigCrC>,
     _getint: Symbol<'a, SigHCrI>,
     _hbox: Symbol<'a, SigHsrH>,
     _label: Symbol<'a, SigCrH>,
@@ -79,6 +80,7 @@ impl<'a> Iup<'a> {
             _getattributeih: unsafe {
                 DLL.get(b"IupGetAttribute\0").unwrap() },
             _getdialogchild: unsafe { DLL.get(b"IupGetDialog\0").unwrap() },
+            _getglobal: unsafe { DLL.get(b"IupGetGlobal\0").unwrap() },
             _getint: unsafe { DLL.get(b"IupGetInt\0").unwrap() },
             _hbox: unsafe { DLL.get(b"IupHbox\0").unwrap() },
             _label: unsafe { DLL.get(b"IupLabel\0").unwrap() },
@@ -129,6 +131,13 @@ impl<'a> Iup<'a> {
     pub fn get_dialog_child(&self, ih: *mut Ihandle,
                             name: &str) -> *mut Ihandle {
         (self._getdialogchild)(ih, c_from_str(&name))
+    }
+
+    pub fn get_global(&self, name: &str) -> String {
+        match c_to_string((self._getglobal)(c_from_str(name))) {
+            Ok(v) => v,
+            Err(_) => "".to_string(),
+        }
     }
 
     pub fn get_ih(&self, ih: *mut Ihandle, name: &str) -> *mut Ihandle {
@@ -215,6 +224,7 @@ impl<'a> Iup<'a> {
 
 pub(crate) type SigCCrH = extern "C" fn(*const i8, *const i8) -> *mut Ihandle;
 pub(crate) type SigCCrV = extern "C" fn(*const i8, *const i8);
+pub(crate) type SigCrC = extern "C" fn(*const i8) -> *const i8;
 pub(crate) type SigCrH = extern "C" fn(*const i8) -> *mut Ihandle;
 pub(crate) type SigHCCrV = extern "C" fn(*mut Ihandle, *const i8, *const i8);
 pub(crate) type SigHCHrV = extern "C" fn(*mut Ihandle, *const i8, *mut Ihandle);
