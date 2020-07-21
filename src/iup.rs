@@ -13,6 +13,8 @@ use std::str;
 lazy_static! {
     pub(crate) static ref IUP_LIB: Library = Library::new(iup_dll()).expect(
         "Failed to find IUP library");
+    pub(crate) static ref IM_LIB: Library = Library::new("iupim").expect(
+        "Failed to find IM library");
     pub static ref IUP: Iup<'static> = Iup::new().expect(
         "Failed to create IUP object");
 }
