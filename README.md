@@ -1,0 +1,20 @@
+# rs-iup
+
+Experimental and incomplete dynamic Rust bindings to the
+[IUP](https://www.tecgraf.puc-rio.br/iup/) library.
+
+An example which shows the bindings in use including callbacks is
+[helloiup]().
+
+To try the example, download this library and the example and put them
+side-by-side in parallel directories, e.g., `parent/iup/` and
+`parent/helloiup`. Then `cd` into `helloiup` and do `cargo run --release`.
+This will fail the first time due to missing libraries. Copy (or on Unix
+soft-link) the `iup/iup` directory to `helloiup/target/release/` and this
+time it should build and run. Or, if you have Python 3 installed, use the
+`run.py` script.
+
+## License
+
+rs-iup is free open source software (FOSS) licensed under the Apache-2.0
+license: see LICENSE.
