@@ -4,7 +4,7 @@ Experimental and incomplete dynamic Rust bindings to the
 [IUP](https://www.tecgraf.puc-rio.br/iup/) library.
 
 An example which shows the bindings in use including callbacks is
-[helloiup]().
+[helloiup](https://github.com/mark-summerfield/helloiup).
 
 To try the example, download this library and the example and put them
 side-by-side in parallel directories, e.g., `parent/iup/` and
