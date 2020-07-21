@@ -11,22 +11,26 @@ use std::ptr;
 use std::str;
 
 lazy_static! {
-    pub(crate) static ref DLL: Library = Library::new(dll()).expect(
+    pub(crate) static ref IUP_LIB: Library = Library::new(iup_dll()).expect(
         "Failed to find IUP library");
     pub static ref IUP: Iup<'static> = Iup::new().expect(
         "Failed to create IUP object");
 }
 
-fn dll() -> PathBuf {
+fn iup_dll() -> PathBuf {
+    exe_path().join(if cfg!(windows) { "iup.dll" } else { "libiup.so" })
+}
+
+fn exe_path() -> PathBuf {
     let exe = env::current_exe().expect("Failed to find exe's path");
     let root = exe.parent().expect(
         "Failed to find location of IUP library");
     let mut root = root.to_path_buf();
     if cfg!(windows) {
-        root.push("iup/windows/iup.dll");
+        root.push("iup/windows");
     } else {
-        root.push("iup/linux/libiup.so");
-    };
+        root.push("iup/linux");
+    }
     root
 }
 
@@ -45,10 +49,12 @@ pub struct Iup<'a> {
     _mainloop: Symbol<'a, SigVrI>,
     _message: Symbol<'a, SigCCrV>,
     _setattribute: Symbol<'a, SigHCCrV>,
+    _setattributehandle: Symbol<'a, SigHCHrV>,
     _setattributeih: Symbol<'a, SigHCHrV>,
     _setcallback: Symbol<'a, SigHCKrK>,
     _setfocus: Symbol<'a, SigHrH>,
     _setglobal: Symbol<'a, SigCCrV>,
+    _sethandle: Symbol<'a, SigCHrH>,
     _setint: Symbol<'a, SigHCIrV>,
     _show: Symbol<'a, SigHrI>,
     _showxy: Symbol<'a, SigHIIrI>,
@@ -61,45 +67,50 @@ pub struct Iup<'a> {
 impl<'a> Iup<'a> {
     fn new() -> XResult<Iup<'a>> {
         let iup_open: Symbol<SigpIpppCrI> = unsafe {
-            DLL.get(b"IupOpen\0").unwrap()
+            IUP_LIB.get(b"IupOpen\0").unwrap()
         };
         if iup_open(ptr::null(), ptr::null()) != NOERROR {
             xerr!("Failed to open IUP library");
         }
         let setglobal: Symbol<SigCCrV> = unsafe {
-            DLL.get(b"IupSetGlobal\0").unwrap()
+            IUP_LIB.get(b"IupSetGlobal\0").unwrap()
         };
         setglobal(c_from_str(UTF8MODE), c_from_str(YES));
         Ok(Iup {
-            _append: unsafe { DLL.get(b"IupAppend\0").unwrap() },
-            _button: unsafe { DLL.get(b"IupButton\0").unwrap() },
-            _close: unsafe { DLL.get(b"IupClose\0").unwrap() },
-            _dialog: unsafe { DLL.get(b"IupDialog\0").unwrap() },
+            _append: unsafe { IUP_LIB.get(b"IupAppend\0").unwrap() },
+            _button: unsafe { IUP_LIB.get(b"IupButton\0").unwrap() },
+            _close: unsafe { IUP_LIB.get(b"IupClose\0").unwrap() },
+            _dialog: unsafe { IUP_LIB.get(b"IupDialog\0").unwrap() },
             _getattribute: unsafe {
-                DLL.get(b"IupGetAttribute\0").unwrap() },
+                IUP_LIB.get(b"IupGetAttribute\0").unwrap() },
             _getattributeih: unsafe {
-                DLL.get(b"IupGetAttribute\0").unwrap() },
-            _getdialogchild: unsafe { DLL.get(b"IupGetDialog\0").unwrap() },
-            _getglobal: unsafe { DLL.get(b"IupGetGlobal\0").unwrap() },
-            _getint: unsafe { DLL.get(b"IupGetInt\0").unwrap() },
-            _hbox: unsafe { DLL.get(b"IupHbox\0").unwrap() },
-            _label: unsafe { DLL.get(b"IupLabel\0").unwrap() },
-            _mainloop: unsafe { DLL.get(b"IupMainLoop\0").unwrap() },
-            _message: unsafe { DLL.get(b"IupMessage\0").unwrap() },
+                IUP_LIB.get(b"IupGetAttribute\0").unwrap() },
+            _getdialogchild: unsafe {
+                IUP_LIB.get(b"IupGetDialog\0").unwrap() },
+            _getglobal: unsafe { IUP_LIB.get(b"IupGetGlobal\0").unwrap() },
+            _getint: unsafe { IUP_LIB.get(b"IupGetInt\0").unwrap() },
+            _hbox: unsafe { IUP_LIB.get(b"IupHbox\0").unwrap() },
+            _label: unsafe { IUP_LIB.get(b"IupLabel\0").unwrap() },
+            _mainloop: unsafe { IUP_LIB.get(b"IupMainLoop\0").unwrap() },
+            _message: unsafe { IUP_LIB.get(b"IupMessage\0").unwrap() },
             _setattribute: unsafe {
-                DLL.get(b"IupSetAttribute\0").unwrap() },
+                IUP_LIB.get(b"IupSetAttribute\0").unwrap() },
+            _setattributehandle: unsafe {
+                IUP_LIB.get(b"IupSetAttributeHandle\0").unwrap() },
             _setattributeih: unsafe {
-                DLL.get(b"IupSetAttribute\0").unwrap() },
-            _setcallback: unsafe { DLL.get(b"IupSetCallback\0").unwrap() },
-            _setfocus: unsafe { DLL.get(b"IupSetFocus\0").unwrap() },
+                IUP_LIB.get(b"IupSetAttribute\0").unwrap() },
+            _setcallback: unsafe {
+                IUP_LIB.get(b"IupSetCallback\0").unwrap() },
+            _setfocus: unsafe { IUP_LIB.get(b"IupSetFocus\0").unwrap() },
             _setglobal: setglobal,
-            _setint: unsafe { DLL.get(b"IupSetInt\0").unwrap() },
-            _show: unsafe { DLL.get(b"IupShow\0").unwrap() },
-            _showxy: unsafe { DLL.get(b"IupShowXY\0").unwrap() },
-            _timer: unsafe { DLL.get(b"IupTimer\0").unwrap() },
-            _vbox: unsafe { DLL.get(b"IupVbox\0").unwrap() },
-            _version: unsafe { DLL.get(b"IupVersion\0").unwrap() },
-            _versionshow: unsafe { DLL.get(b"IupVersionShow\0").unwrap() },
+            _sethandle: unsafe { IUP_LIB.get(b"IupSetHandle\0").unwrap() },
+            _setint: unsafe { IUP_LIB.get(b"IupSetInt\0").unwrap() },
+            _show: unsafe { IUP_LIB.get(b"IupShow\0").unwrap() },
+            _showxy: unsafe { IUP_LIB.get(b"IupShowXY\0").unwrap() },
+            _timer: unsafe { IUP_LIB.get(b"IupTimer\0").unwrap() },
+            _vbox: unsafe { IUP_LIB.get(b"IupVbox\0").unwrap() },
+            _version: unsafe { IUP_LIB.get(b"IupVersion\0").unwrap() },
+            _versionshow: unsafe { IUP_LIB.get(b"IupVersionShow\0").unwrap() },
         })
     }
     
@@ -173,6 +184,11 @@ impl<'a> Iup<'a> {
         (self._setattribute)(ih, c_from_str(&name), c_from_str(&value));
     }
 
+    pub fn set_attribute_handle(&self, ih: *mut Ihandle, name: &str,
+                                ih_named: *mut Ihandle) {
+        (self._setattributehandle)(ih, c_from_str(&name), ih_named);
+    }
+
     pub fn set_callback(&self, ih: *mut Ihandle, name: &str,
                         func: Icallback) -> Icallback {
         (self._setcallback)(ih, c_from_str(&name), func)
@@ -184,6 +200,10 @@ impl<'a> Iup<'a> {
 
     pub fn set_global(&self, name: &str, value: &str) {
         (self._setglobal)(c_from_str(&name), c_from_str(&value));
+    }
+
+    pub fn set_handle(&self, name: &str, ih: *mut Ihandle) -> *mut Ihandle {
+        (self._sethandle)(c_from_str(&name), ih)
     }
 
     pub fn set_ih(&self, ih: *mut Ihandle, name: &str, ihx: *mut Ihandle) {
@@ -224,6 +244,7 @@ impl<'a> Iup<'a> {
 
 pub(crate) type SigCCrH = extern "C" fn(*const i8, *const i8) -> *mut Ihandle;
 pub(crate) type SigCCrV = extern "C" fn(*const i8, *const i8);
+pub(crate) type SigCHrH = extern "C" fn(*const i8, *mut Ihandle) -> *mut Ihandle;
 pub(crate) type SigCrC = extern "C" fn(*const i8) -> *const i8;
 pub(crate) type SigCrH = extern "C" fn(*const i8) -> *mut Ihandle;
 pub(crate) type SigHCCrV = extern "C" fn(*mut Ihandle, *const i8, *const i8);

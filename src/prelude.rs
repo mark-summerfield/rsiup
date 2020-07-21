@@ -31,6 +31,7 @@ pub const CONTINUE: i32 = -4;
 pub const ACTION: &str = "ACTION";
 pub const ACTION_CB: &str = "ACTION_CB";
 pub const BRINGFRONT: &str = "BRINGFRONT";
+pub const ICON: &str = "ICON";
 pub const NAME: &str = "NAME";
 pub const RUN: &str = "RUN";
 pub const SYSTEM: &str = "SYSTEM";

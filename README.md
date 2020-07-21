@@ -17,6 +17,9 @@ directory to `iup` _or_ fix the `path` used in `helloiup`'s `Cargo.toml`
 file. Note also that the provided `.so`s and `.dll`s are for 64-bit
 systems.)
 
+**I've reached a dead-end since I can't work out how to dynamically load the
+IUP IM library**
+
 ## License
 
 rsiup is free open source software (FOSS) licensed under the Apache-2.0
