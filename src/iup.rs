@@ -13,15 +13,26 @@ use std::str;
 lazy_static! {
     pub(crate) static ref IUP_LIB: Library = Library::new(iup_dll()).expect(
         "Failed to find IUP library");
-    pub(crate) static ref IM_LIB: Library = Library::new("iupim").expect(
+    /*
+    pub(crate) static ref IM_LIB: Library = Library::new(im_dll()).expect(
         "Failed to find IM library");
+    */
     pub static ref IUP: Iup<'static> = Iup::new().expect(
         "Failed to create IUP object");
+    /*
+    pub static ref IM: Im<'static> = Im::new();
+    */
 }
 
 fn iup_dll() -> PathBuf {
     exe_path().join(if cfg!(windows) { "iup.dll" } else { "libiup.so" })
 }
+
+/*
+fn im_dll() -> PathBuf {
+    exe_path().join(if cfg!(windows) { "iupim.dll" } else { "libiupim.so" })
+}
+*/
 
 fn exe_path() -> PathBuf {
     let exe = env::current_exe().expect("Failed to find exe's path");
@@ -35,6 +46,23 @@ fn exe_path() -> PathBuf {
     }
     root
 }
+
+/*
+pub struct Im<'a> { // TODO move to im.rs
+    _loadimage: Symbol<'a, SigCrH>,
+}
+impl<'a> Im<'a> {
+    fn new() -> Im<'a> {
+        Im {
+            _loadimage: unsafe { IM_LIB.get(b"IupLoadImage\0").unwrap() },
+        }
+    }
+
+    pub fn load_image(&self, name: &str) -> *mut Ihandle {
+        (self._loadimage)(c_from_str(&name))
+    }
+}
+*/
 
 pub struct Iup<'a> {
     _append: Symbol<'a, SigHHrH>,
