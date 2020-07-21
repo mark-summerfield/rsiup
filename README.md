@@ -12,7 +12,10 @@ side-by-side in parallel directories, e.g., `parent/iup/` and
 This will fail the first time due to missing libraries. Copy (or on Unix
 soft-link) the `iup/iup` directory to `helloiup/target/release/` and this
 time it should build and run. Or, if you have Python 3 installed, use the
-`run.py` script.
+`run.py` script. (If it doesn't build make sure you changed the `rsiup`
+directory to `iup` _or_ fix the `path` used in `helloiup`'s `Cargo.toml`
+file. Note also that the provided `.so`s and `.dll`s are for 64-bit
+systems.)
 
 ## License
 
