@@ -140,7 +140,8 @@ impl<'a> Iup<'a> {
             _timer: unsafe { IUP_LIB.get(b"IupTimer\0").unwrap() },
             _vbox: unsafe { IUP_LIB.get(b"IupVbox\0").unwrap() },
             _version: unsafe { IUP_LIB.get(b"IupVersion\0").unwrap() },
-            _versionshow: unsafe { IUP_LIB.get(b"IupVersionShow\0").unwrap() },
+            _versionshow: unsafe {
+                IUP_LIB.get(b"IupVersionShow\0").unwrap() },
         })
     }
     
