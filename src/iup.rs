@@ -5,6 +5,7 @@ use crate::prelude::*;
 use crate::{xerr, xerror::{xerror, XResult}};
 use lazy_static::lazy_static;
 use libloading::{Library, Symbol};
+use scopeguard;
 use std::env;
 use std::path::PathBuf;
 use std::ptr;
@@ -41,9 +42,27 @@ fn exe_path() -> PathBuf {
     root
 }
 
+fn with_env<R> (key: impl AsRef<::std::ffi::OsStr>,
+                value: impl AsRef<::std::ffi::OsStr>,
+                func: impl FnOnce() -> R) -> R {
+    let key = key.as_ref();
+    let prev = env::var_os(key);
+    env::set_var(key, value);
+    scopeguard::defer!(if let Some(prev) = prev {
+        env::set_var(key, prev);
+    });
+    func()
+}
+
+with_env("LD_LIBRARY_PATH", exe_path().to_str().unwrap(), || {
+    lazy_static::initialize(&IM_LIB);
+});
+lazy_static::initialize(&IM);
+
 pub struct Im<'a> { // TODO move to im.rs
     _loadimage: Symbol<'a, SigCrH>,
 }
+
 impl<'a> Im<'a> {
     fn new() -> Im<'a> {
         Im {
