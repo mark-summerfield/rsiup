@@ -14,8 +14,10 @@ use std::str;
 lazy_static! {
     pub(crate) static ref IUP_LIB: Library = Library::new(iup_dll()).expect(
         "Failed to find IUP library");
-    pub(crate) static ref IM_LIB: Library = Library::new(im_dll()).expect(
-        "Failed to find IM library");
+    pub(crate) static ref IM_LIB: Library =
+        with_env("LD_LIBRARY_PATH", exe_path().to_str().unwrap(), || {
+            Library::new(im_dll()).expect("Failed to find IM library")
+        });
     pub static ref IUP: Iup<'static> = Iup::new().expect(
         "Failed to create IUP object");
     pub static ref IM: Im<'static> = Im::new();
@@ -53,11 +55,6 @@ fn with_env<R> (key: impl AsRef<::std::ffi::OsStr>,
     });
     func()
 }
-
-with_env("LD_LIBRARY_PATH", exe_path().to_str().unwrap(), || {
-    lazy_static::initialize(&IM_LIB);
-});
-lazy_static::initialize(&IM);
 
 pub struct Im<'a> { // TODO move to im.rs
     _loadimage: Symbol<'a, SigCrH>,
