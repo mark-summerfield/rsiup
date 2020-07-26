@@ -56,6 +56,50 @@ fn with_env<R> (key: impl AsRef<::std::ffi::OsStr>,
     func()
 }
 
+pub fn set_library_path () {
+#[cfg(unix)] {
+    use ::std::{
+        env,
+        ffi::OsStr,
+        ops::Not,
+        os::unix::{
+            ffi::OsStrExt,
+            process::ExitStatusExt,
+        },
+    };
+    if env::var("__RECURSION_HACK__").map_or(false, |s| s == "1").not() {
+        ::std::process::exit({
+            let exe = env::current_exe().unwrap();
+            let exe_dir = exe_path();
+            let mut library_path = exe_dir.as_os_str();
+            let mut storage: Vec<u8>;
+            if let Some(ref os_str) = ::std::env::var_os(
+                    "LD_LIBRARY_PATH") {
+                storage = library_path.as_bytes().to_vec();
+                storage.push(b':');
+                storage.extend_from_slice(os_str.as_bytes());
+                library_path = OsStr::from_bytes(&storage);
+            }
+            let status =
+                ::std::process::Command::new(exe)
+                    .env("__RECURSION_HACK__", "1")
+                    .args(&env::args_os().collect::<Vec<_>>())
+                    .env("LD_LIBRARY_PATH", library_path)
+                    .status()
+                    .expect("Failed to re-execute itself")
+            ;
+            match status.code() {
+                | Some(exit_code) => exit_code,
+                | None => {
+                    // Terminated by a signal
+                    let signal = status.signal().unwrap(); 
+                    panic!("Process terminated with signal {}", signal);
+                },
+            }
+        });
+    }
+}}
+
 pub struct Im<'a> { // TODO move to im.rs
     _loadimage: Symbol<'a, SigCrH>,
 }

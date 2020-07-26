@@ -6,4 +6,4 @@ mod prelude;
 mod xerror;
 
 pub use prelude::*;
-pub use iup::{IM, IUP};
+pub use iup::{IM, IUP, set_library_path};
